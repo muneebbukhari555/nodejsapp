@@ -1,17 +1,16 @@
-node {
-  def myGradleContainer = docker.image('gradle:jdk8-alpine')
-  myGradleContainer.pull()
-  stage('prep') {
-    checkout scm
-  }
-  stage('test') {
-     myGradleContainer.inside("-v ${env.HOME}/.gradle:/home/gradle/.gradle") {
-       sh 'cd complete && gradle test'
-     }
-  }
-  stage('run') {
-     myGradleContainer.inside("-v ${env.HOME}/.gradle:/home/gradle/.gradle") {
-       sh 'cd complete && gradle run'
-     }
-  }
+pipeline {				
+    agent any				
+    triggers {				
+        pollSCM('* * * * *')				
+    }				
+    stages {				
+        stage('Build') {				
+            steps {	
+                checkout([$class: 'GitSCM', 				
+				branches: [[name: "origin/master"]], 
+				userRemoteConfigs: [[
+                url: 'https://github.com/muneebbukhari555/nodejsapp.git']]])
+            }				
+        }				
+    }				
 }
